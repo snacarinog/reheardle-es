@@ -11,6 +11,9 @@ function App() {
   const [attempt, setAttempt] = useState(0);
   const [isCorrect, setIsCorrect] = useState(null);
   const [attemptColors, setAttemptColors] = useState([]);
+  const [allSuggestions, setAllSuggestions] = useState([]);
+  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
+  const [failedGuesses, setFailedGuesses] = useState([]);
 
   const audioRef = useRef();
 
@@ -33,6 +36,25 @@ function App() {
     fetchRandomSong();
   }, [fetchRandomSong]);
 
+  useEffect(() => {
+  fetch('/api/songs/list')
+    .then(res => res.json())
+    .then(data => setAllSuggestions(data));
+  }, []);
+
+  useEffect(() => {
+  const filtered = allSuggestions
+    .filter(name =>
+      name.toLowerCase().includes(guess.toLowerCase()) &&
+      !failedGuesses.includes(name)
+    )
+    .slice(0, 7);
+  setFilteredSuggestions(filtered);
+  }, [guess, allSuggestions, failedGuesses]);
+
+
+
+
   const advanceAttempt = () => {
     setAttempt(prev => Math.min(prev + 1, maxAttempts));
     setGuess('');
@@ -43,7 +65,6 @@ function App() {
 
   const handleGuess = () => {
     if (!guess.trim() || !song) return;
-
     const normalizedGuess = guess.trim().toLowerCase();
     const correctAnswer = `${song.artist} - ${song.title}`.toLowerCase();
 
@@ -55,7 +76,9 @@ function App() {
         return newColors;
       });
     } else {
+      console.log(normalizedGuess, correctAnswer)
       setIsCorrect(false);
+      setFailedGuesses(prev => [...prev, guess.trim()]);
       setAttemptColors(prev => {
         const newColors = [...prev];
         newColors[attempt] = '#f87171'; // rojo
@@ -105,6 +128,7 @@ function App() {
               setGuess={setGuess}
               onSubmit={handleGuess}
               onSkip={handleSkip}
+              suggestions={filteredSuggestions}
             />
           )}
 

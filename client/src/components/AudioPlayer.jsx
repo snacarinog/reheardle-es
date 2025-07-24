@@ -51,7 +51,10 @@ const AudioPlayer = forwardRef(({ src, fragmentIndex, disabled }, ref) => {
 
   return (
     <div>
-      <audio ref={audioRef} src={src} preload="auto" />
+      <audio ref={audioRef} preload="auto">
+       <source src={encodeURI(src)} type="audio/mpeg" />
+          Tu navegador no soporta audio HTML5.
+      </audio>
       <button onClick={playFragment} disabled={disabled}>
         ▶️ Escuchar {maxTime}s
       </button>

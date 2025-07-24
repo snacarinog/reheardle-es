@@ -47,7 +47,7 @@ with open(archivo_txt, "r", encoding="utf-8") as f:
             print(f"⚠️  No se encontró archivo de audio para: {full_name}")
             continue
         
-        ruta_audio = f"D:/reheardle-es/server/canciones/{audio_file}"
+        ruta_audio = f"/canciones/{audio_file}"
         
         canciones_json.append({
             "artist": artista,
